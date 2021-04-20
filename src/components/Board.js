@@ -4,8 +4,8 @@ export default function Board({ GridSize }) {
 
     const initGrid = [...Array(GridSize)].map(() => [...Array(GridSize)].fill(0));
 
-    initGrid[2][0] = 2;
-    initGrid[2][2] = 4;
+    // initGrid[2][0] = 2;
+    // initGrid[2][2] = 4;
     const [grid, setGrid] = useState([...initGrid]);
     const [gameOver, setGameOver] = useState(false);
 
@@ -30,7 +30,7 @@ export default function Board({ GridSize }) {
         let position = Math.floor(Math.random() * freeSpaces.length);
         console.log('position', position);
         gridCopy[freeSpaces[position].row][freeSpaces[position].col] =
-            Math.random() > 0.5 ? 2 : 4;
+            Math.random() > 0.49 ? 4 : 2;
 
         setGrid(gridCopy);
 
@@ -40,10 +40,10 @@ export default function Board({ GridSize }) {
         let gridCopy = [...grid];
         console.log(gridCopy);
         gridCopy = gridCopy.map((row) => {
-            let rowCopy = [...row];
-            rowCopy = shift('right', [...rowCopy]);
+            // let rowCopy = [...row];
+            let rowCopy = shift('right', row);
             mergeRight(rowCopy);
-            rowCopy = shift('right', [...rowCopy]);
+            rowCopy = shift('right', rowCopy);
 
             return rowCopy;
         })
@@ -57,10 +57,10 @@ export default function Board({ GridSize }) {
         let gridCopy = [...grid];
         console.log(gridCopy);
         gridCopy = gridCopy.map((row) => {
-            let rowCopy = [...row];
-            rowCopy = shift('left', [...rowCopy]);
+            // let rowCopy = [...row];
+            let rowCopy = shift('left', row);
             mergeLeft(rowCopy);
-            rowCopy = shift('left', [...rowCopy]);
+            rowCopy = shift('left', rowCopy);
 
             return rowCopy;
         })
@@ -73,24 +73,24 @@ export default function Board({ GridSize }) {
         let gridCopy = transpose(grid);
 
         gridCopy = gridCopy.map((row) => {
-            let rowCopy = [...row];
-            rowCopy = shift('left', [...rowCopy]);
+            // let rowCopy = [...row];
+            let rowCopy = shift('left', row);
             mergeLeft(rowCopy);
-            rowCopy = shift('left', [...rowCopy]);
+            rowCopy = shift('left', rowCopy);
             return rowCopy;
 
         })
         addNewNumber(transpose(gridCopy));
     }
 
-    const bottomShift =()=>{
+    const bottomShift = () => {
         let gridCopy = transpose(grid);
 
         gridCopy = gridCopy.map((row) => {
-            let rowCopy = [...row];
-            rowCopy = shift('right', [...rowCopy]);
+            // let rowCopy = [...row];
+            let rowCopy = shift('right', row);
             mergeRight(rowCopy);
-            rowCopy = shift('right', [...rowCopy]);
+            rowCopy = shift('right', rowCopy);
             return rowCopy;
 
         })
@@ -131,26 +131,35 @@ export default function Board({ GridSize }) {
     };
 
     const shift = (direction, row) => {
+        // let arr = row.filter((val) => val);
+        // //will get arr without zeros
+
+        // let missing = GridSize - arr.length;
+        // let zeros = Array(missing).fill(0);
+
+        // switch (direction) {
+        //     case 'right':
+        //         arr = zeros.concat(arr);
+        //         return arr;
+        //     case 'left':
+        //         arr = arr.concat(zeros);
+        //         return arr;
+        // }
         let arr = row.filter((val) => val);
-        //will get arr without zeros
-
-        let missing = GridSize - arr.length;
-        let zeros = Array(missing).fill(0);
-
-        switch (direction) {
-            case 'right':
-                arr = zeros.concat(arr);
-                return arr;
-            case 'left':
-                arr = arr.concat(zeros);
-                return arr;
+        let zeroCount = GridSize - arr.length;
+        let zero = Array(zeroCount).fill(0);
+        if (direction === "right") {
+            arr = zero.concat(arr);
+        } else {
+            arr = arr.concat(zero);
         }
+        return arr;
     }
 
     const handleKeydownListener = (event) => {
         event.preventDefault();
         // addNewNumber();
-        if(gameOver){
+        if (gameOver) {
             return;
         }
         const { code } = event;
@@ -170,6 +179,7 @@ export default function Board({ GridSize }) {
             default:
                 break;
         }
+       
 
     }
 
@@ -180,6 +190,10 @@ export default function Board({ GridSize }) {
             window.removeEventListener('keydown', handleKeydownListener);
         }
     }, [grid]);
+
+    useEffect(() => {
+        addNewNumber([...grid]);
+      }, []);
 
     return (
         <>
